@@ -32,9 +32,8 @@ def decrypt_message(encrypted_message, key):
     return decrypted_message.decode()
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    key = generate_key()
-    print(key)
-    # encripted = encrypt_message("encrypt this message", key)
-    # decrypt_message(encripted,key)
+#     key = generate_key()
+#     encripted = encrypt_message("encrypt this message", key)
+#     decrypt_message(encripted,key)
