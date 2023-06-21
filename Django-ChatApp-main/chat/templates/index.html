@@ -13,7 +13,7 @@
           <div class="card-body">
             <div class="row">
               <div class="col-9">
-                <h5 class="card-title">{{ room.room_name }}</h5>
+                <h5 class="card-title">{{ room.name_to_display }}</h5>
                 <p class="card-text">{{ room.last_message.message }}</p>
                 <small>{{ room.last_message.sender }} {{ room.last_message.timestamp }}</small>
               </div>
@@ -27,7 +27,7 @@
       </div>        
     </div>
 
-    <div class="card mt-5">
+    <!-- <div class="card mt-5">
         <div class="card-body" style="background-color: #FDF5E6;">
           <h5 class="card-title mb-3"> New Room</h5>
           <div class="input-group input-group-sm mb-2">
@@ -41,9 +41,9 @@
           </div>          
           <small>* Only AlphaNumeric Room Names are allowed. Spaces and other characters will be removed.</small>
         </div>
-    </div>
+    </div> -->
 
-    <script>
+    <!-- <script>
         function createRoom(event) {
           event.preventDefault();
           let words = document.getElementById('roomName').value
@@ -51,5 +51,5 @@
           let roomName = words.map(word => word.charAt(0).toUpperCase() + word.slice(1)).join('');
           window.location.href = '/chat/' + encodeURIComponent(roomName);
         }
-    </script>
+    </script> -->
 {% endblock %}

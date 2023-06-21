@@ -1,3 +1,4 @@
+from chat.models import ChatRoom
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login, logout
 from django.contrib.auth.models import User
@@ -41,6 +42,12 @@ def signup(request):
             user = User.objects.create_user(username, email, password1)
             user.save()
             messages.success(request, "SignUp succesful! Login to continue")
+
+            all_users = User.objects.all()
+            for old_user in all_users:
+                if old_user.username != username:
+                    ChatRoom.objects.get_or_create(name=f'{old_user.username}-{username}', owner=user, guest=old_user)
+
             return redirect('login')
     return render(request, 'signup.html')
 
