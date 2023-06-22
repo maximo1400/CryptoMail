@@ -23,8 +23,8 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
-        key = text_data_json["key"].encode()
-        message = str(chat.symetric.encrypt_message(message, key))
+        # key = text_data_json["key"].encode()
+        # message = str(chat.symetric.encrypt_message(message, key))
         
         # Extract the sender and chatroom information from the consumer's scope
         sender = self.scope["user"]

@@ -3,10 +3,10 @@
 {% block content %}
     <h3>Welcome, {{ user.username }}!</h3>
 
-    <h5>Chat Rooms available</h5>
+    <h5>Chats available</h5>
 
     <div class="d-flex flex-column">
-      <div class="border border-20 p-3" style="overflow-y: scroll;height: 45vh;">
+      <div class="border border-20 p-3" style="overflow-y: scroll;height: 75vh;">
         <!-- <div class="row"></div> -->
         {% for room in chat_rooms %}
         <div class="card mb-3" >
