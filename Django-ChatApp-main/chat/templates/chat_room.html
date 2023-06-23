@@ -6,10 +6,23 @@
     margin-bottom: 10px;
   }
 
+  .input-block {
+    display: block;
+    /* Agrega estilos adicionales según tus necesidades */
+  }
+
+  .message-text {
+    display: inline-block;
+    /* Hace que el span se comporte como un bloque en línea */
+    word-wrap: break-word;
+  }
+
   .message-content {
     padding: 10px;
     border-radius: 10px;
     background-color: #f0f0f0;
+    overflow-y: auto;
+    overflow-wrap: break-word;
   }
 
   .self .message-content {
@@ -29,50 +42,87 @@
 {% endblock %}
 
 {% block content %}
-<h3>Chat Room: {{ name_to_display }}</h3>
 
-<div id="chatMessages" class="card mb-3" style="overflow-y: scroll;height: 75vh;">
-  <div class="card-body" style="overflow-y: auto;">
-    <div class="row" id="chatBox">
-      <!-- Beginning of chat history -->
-      <div class="col-2"></div>
-      <div class="col-8 text-center"><a class="badge text-secondary-emphasis bg-secondary-subtle gray-900">This is
-          beginning of the chat history</a></div>
-      <div class="col-2"></div>
-      <!-- Beginning of chat messages -->
-      {% for message in chat_messages %}
-      <div class="col-4 d-{% if message.sender.username == current_user %}block{%else%}none{% endif %}"></div>
-      <div class="col-8">
-        <div class="message mb-3 {% if message.sender.username == current_user %}self float-end{% endif %}">
-          <div class="message-content">
-            <small style="font-size: 13px;">{{ message.sender.username }}</small>
-            <p class="mb-1">{{ message.message }}</p>
-            <small style="font-size: 11px;">{{ message.timestamp }}</small>
-            <p></p>
-            <button type="button" class="btn btn-primary"  onclick="decryptDiv(event)">
+<!-- <div class="container"> -->
+<div class="row justify-content-between">
+  <div class="col">
+    <h3>Chat Room: {{ name_to_display }}</h3>
+
+    <div id="chatMessages" class="card mb-3" style="overflow-y: auto;height: 75vh; max-width: 800px;">
+      <div class="card-body" style="overflow-y: auto;">
+        <div class="row" id="chatBox">
+          <!-- Beginning of chat history -->
+          <div class="col-2"></div>
+          <div class="col-8 text-center"><a class="badge text-secondary-emphasis bg-secondary-subtle gray-900">This is
+              beginning of the chat history</a></div>
+          <div class="col-2"></div>
+          <!-- Beginning of chat messages -->
+          {% for message in chat_messages %}
+          <div class="col-4 d-{% if message.sender.username == current_user %}block{%else%}none{% endif %}"></div>
+          <div class="col-8">
+            <div class="message mb-3 {% if message.sender.username == current_user %}self float-end{% endif %}">
+              <div class="message-content">
+                <small style="font-size: 13px;">{{ message.sender.username }}</small>
+                <p class="mb-1">{{ message.message }}</p>
+                <small style="font-size: 11px;">{{ message.timestamp }}</small>
+                <p></p>
+                <button type="button" class="btn btn-primary" onclick="decryptDiv(event)">
+                  <i class="fa fa-unlock  fa-fw"></i>
+                  <span class="d-none d-sm-inline"> Desencriptar</span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-4 d-{% if message.sender.username == current_user %}none{%else%}block{% endif %}"></div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="input-group input-group-sm">
+          <input type="text" class="form-control" id="messageInput" placeholder="Type your message..." />
+          <input type="text" class="form-control" id="keyInput" placeholder="Type your key..." />
+          <div class="input-group-append">
+            <button type="button" id="sendButton" class="btn btn-primary">
               <i class="fa fa-paper-plane fa-fw"></i>
-              <span class="d-none d-sm-inline"> Desencriptar</span>
+              <span class="d-none d-sm-inline"> Send</span>
             </button>
           </div>
         </div>
       </div>
-      <div class="col-4 d-{% if message.sender.username == current_user %}none{%else%}block{% endif %}"></div>
-      {% endfor %}
     </div>
   </div>
-  <div class="card-footer">
-    <div class="input-group input-group-sm">
-      <input type="text" class="form-control" id="messageInput" placeholder="Type your message..." />
-      <input type="text" class="form-control" id="keyInput" placeholder="Type your key..." />
-      <div class="input-group-append">
-        <button type="button" id="sendButton" class="btn btn-primary">
-          <i class="fa fa-paper-plane fa-fw"></i>
-          <span class="d-none d-sm-inline"> Send</span>
-        </button>
+
+  <div class="col">
+    <div id="keyAgreement" class="mb-3" style="height: 75vh; ">
+      <h3>Key Sharing</h3>
+      <div class="card mb-3" style="padding: 20px">
+        <div>
+          <h4 >Public Key</h4>
+          <input id="pub_key" type="text" value="21e0c907c0b37a12a4f8b144ed8839a9025b4f078c139e3995979c9a7b2cec89" style="width: 100%;" readonly>
+          <h4>Private Key</h4>
+          <input id="priv_key" type="text" value="can't touch this" style="width: 100%;" readonly>
+          <div class="container" style="padding: 1vh;">
+            <div class="row">
+              <div class="col">
+                <button type="button" class="btn btn-info" onclick="" id="gen_key">Gen keys</button>
+              </div>
+              <div class="col">
+                <button type="button" class="btn btn-info" onclick="" id="send_key">Share Key</button>
+              </div>
+            </div>
+          </div>
+          <h3>received key</h3>
+          <input id="shared_key" type="text" value="can't touch this" style="width: 100%;" readonly>
+          <h3>Final Key</h3>
+          <input id="final_key" type="text" value="can't touch this" style="width: 100%;" readonly>
+        </div>
       </div>
+
     </div>
   </div>
+
 </div>
+<!-- </div> -->
 
 {{ request.user.username|json_script:"user_username" }}
 {{ room_name|json_script:"room-name" }}
@@ -88,8 +138,8 @@
   chatSocket.onmessage = function (e) {
     const message = JSON.parse(e.data);
     console.log(message)
-    const decryptedMessage = decript(message.message, 'hola')
-    console.log(decryptedMessage)
+    // const decryptedMessage = decript(message.message, 'hola')
+    // console.log(decryptedMessage)
     document.getElementById("chatBox").innerHTML += `
         <div class="col-4 d-${message.username == user_username ? 'block' : 'none'}"></div>
           <div class="col-8">
@@ -109,43 +159,13 @@
         <div class="col-4 d-${message.username == user_username ? 'none' : 'block'}"></div>
       `
   }
-  function encript(message, key) {
-    var encrypted = CryptoJS.AES.encrypt(message, key);
-    return encrypted.toString();
-  }
-
-  function decript(message, key) {
-    var decrypted = CryptoJS.AES.decrypt(message, key);
-    return decrypted.toString(CryptoJS.enc.Utf8);
-  }
-
-
-
-  function decryptDiv(event) {
-    var mensajeElement = event.target.parentNode.parentNode.querySelector('.message-content p');
-    var keyInput = document.getElementById('keyInput');
-    const key = keyInput.value.trim();
-    const mensaje = mensajeElement.textContent;
-
-    if(key == ""){
-      alert("Inserta la key");
-      return
-    }
-    
-    var dMsg = decript(mensaje, key);
-
-    if (dMsg == '') {
-        alert("key invalida");
-        return
-    }
-    mensajeElement.textContent = dMsg
-    
-  }
 
   // Send Message to WebSocket
   const sendButton = document.getElementById('sendButton');
   const messageInput = document.getElementById('messageInput');
   const keyInput = document.getElementById('keyInput');
+  const sendKey = document.getElementById('send_key');
+  
   sendButton.addEventListener('click', (event) => {
     const message = messageInput.value.trim();
     const key = keyInput.value.trim();
@@ -153,19 +173,37 @@
       const encryptedMessage = encript(message, key)
       // Send the message to the server
       chatSocket.send(JSON.stringify({
-        'message': encryptedMessage,
-        'key': key,
+        'content': encryptedMessage,
+        'is_key': false,
+        'is_message': true,
       }));
       messageInput.value = '';
     }
   });
+
+
+  const genKeyButton = document.getElementById("gen_key");
+  const pubKeyText = document.getElementById('pub_key');
+  const privKeyText = document.getElementById('priv_key');
+
+  genKeyButton.addEventListener('click', (event) =>{
+      const keys = gen_key()
+      console.log(keys)
+      pubKeyText.value = keys.pub_key.toString()
+      privKeyText.value = keys.priv_key.toString()
+  })
+  
 </script>
+
+
 
 <!-- <script type="text/javascript">
   var encrypted = CryptoJS.AES.encrypt("message", "Secret Passphrase");
-  var decrypted = CryptoJS.AES.decrypt("U2FsdGVkX1+KiKK7PCMsUIkEsj/Xz9CufXedQ4raf+s=", "Q1xniK0P3NaXX5dXLbaRvqAx1h0wDDDPO4gdZwAK3Lk=");
+  var decrypted = CryptoJS.AES.decrypt(e, "Q1xniK0P3NaXX5dXLbaRvqAx1h0wDDDPO4gdZwAK3Lk=");
 
   console.log(decrypted.toString(CryptoJS.enc.Utf8));
 
-</script>  -->
+</script> 
+
+
 {% endblock %}
