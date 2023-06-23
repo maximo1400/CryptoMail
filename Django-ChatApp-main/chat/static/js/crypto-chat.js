@@ -41,7 +41,7 @@ function gen_key() {
   var pub_key = priv_key.getPublic();
   return {
     'priv_key': priv_key,
-    'pub_key': pub_key.toString(16),
+    'pub_key': pub_key,
   }
 }
 
@@ -56,7 +56,7 @@ function gen_shared_key(pub_key, priv_key) {
 
   // console.log(priv_key_class)
   // var shared = priv_key_class.derive(pub_key);
-  return shared.toString(16);
+  return shared_key.toString(16);
 }
 
 function test_ecdh() {
