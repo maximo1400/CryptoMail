@@ -27,6 +27,7 @@ class Message(models.Model):
     chatroom = models.ForeignKey(ChatRoom, on_delete=models.CASCADE)
     sender = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.TextField()
+    signature = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

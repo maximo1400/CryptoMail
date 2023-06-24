@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/elliptic/6.5.4/elliptic.min.js" integrity="sha512-78ON1nQI4R5btOF/cPVb/msINn8P3K6yJ7n29r4J0M4SBLhTDmFqZgNQ7htZM16539xPvQDywpTdJaQPxuXxGw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- <script src="../static/js/fernetBrowser.js"></script> -->
     <script src = "{% static 'js/crypto-chat.js' %}"></script>
-    <title>ChatApp with Django</title>
+    <title>CryptoMail with Django</title>
     {% block head %}{% endblock %}
 </head>
 
@@ -21,7 +21,7 @@
 
     <nav class="navbar fixed-top bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand text-white" href="{% url 'home' %}">ChatApp</a>
+            <a class="navbar-brand text-white" href="{% url 'home' %}">CryptoMail</a>
             <a class="btn btn-warning" href="{% url 'signout' %}">SignOut</a>
         </div>
     </nav>
@@ -32,11 +32,11 @@
         {% endblock %}
     </div>
 
-    <footer class="footer fixed-bottom border-top">
-        <div class="row g-0 justify-content-between fs--1 mt-4 mb-3">
+    <footer class="footer fixed-bottom border-top" style="max-height: min-content; background: white;">
+        <div class="row g-0 justify-content-between fs--1 mt-1 mb-1">
             <div class="col-12 text-center">
-                <p class="mb-0 text-600">Made with <span class="far fa-heart text-danger"></span> by <a
-                        href="https://github.com/shubham99bisht/">@shubham99bisht</a></p>
+                <p class="mb-0 text-600">Thanks to <a
+                        href="https://github.com/shubham99bisht/">@shubham99bisht</a> <span class="far fa-heart text-danger"></span></p>
             </div>
         </div>
     </footer>

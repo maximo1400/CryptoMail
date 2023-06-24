@@ -6,15 +6,14 @@
     margin-bottom: 10px;
   }
 
+  .message p {
+    word-break: break-all;
+  }
+
+
   .input-block {
     display: block;
     /* Agrega estilos adicionales según tus necesidades */
-  }
-
-  .message-text {
-    display: inline-block;
-    /* Hace que el span se comporte como un bloque en línea */
-    word-wrap: break-word;
   }
 
   .message-content {
@@ -48,56 +47,63 @@
   <div class="col">
     <h3>Chat Room: {{ name_to_display }}</h3>
 
-    <div id="chatMessages" class="card mb-3" style="overflow-y: auto;height: 75vh; max-width: 800px;">
-      <div class="card-body" style="overflow-y: auto;">
-        <div class="row" id="chatBox">
-          <!-- Beginning of chat history -->
-          <div class="col-2"></div>
-          <div class="col-8 text-center"><a class="badge text-secondary-emphasis bg-secondary-subtle gray-900">This is
-              beginning of the chat history</a></div>
-          <div class="col-2"></div>
-          <!-- Beginning of chat messages -->
-          {% for message in chat_messages %}
-          <div class="col-4 d-{% if message.sender.username == current_user %}block{%else%}none{% endif %}"></div>
-          <div class="col-8">
-            <div class="message mb-3 {% if message.sender.username == current_user %}self float-end{% endif %}">
-              <div class="message-content">
-                <small style="font-size: 13px;">{{ message.sender.username }}</small>
-                <p class="mb-1">{{ message.message }}</p>
-                <small style="font-size: 11px;">{{ message.timestamp }}</small>
-                <p></p>
-                <button type="button" class="btn btn-primary" onclick="decryptDiv(event)">
-                  <i class="fa fa-unlock  fa-fw"></i>
-                  <span class="d-none d-sm-inline"> Desencriptar</span>
-                </button>
+    <div id="chatMessages" class="card mb-3" style="overflow-y: auto;height: 70vh; max-width: 800px; min-width: 800px;">
+      <div class="wrapper">
+        <div class="card-body" style="overflow-y: auto;">
+          <div class="row" id="chatBox">
+            <!-- Beginning of chat history -->
+            <div class="col-2"></div>
+            <div class="col-8 text-center"><a class="badge text-secondary-emphasis bg-secondary-subtle gray-900">This is
+                beginning of the chat history</a></div>
+            <div class="col-2"></div>
+            <!-- Beginning of chat messages -->
+            {% for message in chat_messages %}
+            <div class="col-4 d-{% if message.sender.username == current_user %}block{%else%}none{% endif %}"></div>
+            <div class="col-8">
+              <div class="message mb-3 {% if message.sender.username == current_user %}self float-end{% endif %}">
+                <div class="message-content">
+                  <small style="font-size: 13px;">{{ message.sender.username }}</small>
+                  <p class="mb-1">{{ message.message }}</p>
+                  <p style="font-size: 9px;">
+                    Signature:
+                    <small style="font-size: 9px;">{{ message.signature }}</small>
+                  </p>
+                  <small style="font-size: 11px;">{{ message.timestamp }}</small>
+                  <p></p>
+                  <button type="button" class="btn btn-primary" onclick="decryptDiv(event)">
+                    <i class="fa fa-unlock  fa-fw"></i>
+                    <span class="d-none d-sm-inline"> Desencriptar</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="col-4 d-{% if message.sender.username == current_user %}none{%else%}block{% endif %}"></div>
-          {% endfor %}
-        </div>
-      </div>
-      <div class="card-footer">
-        <div class="input-group input-group-sm">
-          <input type="text" class="form-control" id="messageInput" placeholder="Type your message..." />
-          <input type="text" class="form-control" id="keyInput" placeholder="Type your key..." />
-          <div class="input-group-append">
-            <button type="button" id="sendButton" class="btn btn-primary">
-              <i class="fa fa-paper-plane fa-fw"></i>
-              <span class="d-none d-sm-inline"> Send</span>
-            </button>
+            <div class="col-4 d-{% if message.sender.username == current_user %}none{%else%}block{% endif %}"></div>
+            {% endfor %}
           </div>
         </div>
       </div>
     </div>
+    <div class="card-footer">
+      <div class="input-group input-group-sm">
+        <input type="text" class="form-control" id="messageInput" placeholder="Type your message..." />
+        <input type="text" class="form-control" id="keyInput" placeholder="Type your key..."/>
+        <div class="input-group-append">
+          <button type="button" id="sendButton" class="btn btn-primary">
+            <i class="fa fa-paper-plane fa-fw"></i>
+            <span class="d-none d-sm-inline"> Send</span>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
+
 
   <div class="col">
     <div id="keyAgreement" class="mb-3" style="height: 75vh; ">
       <h3>Key Sharing</h3>
       <div class="card mb-3" style="padding: 20px">
         <div>
-          <h4 >Public Key</h4>
+          <h4>Public Key</h4>
           <input id="pub_key" type="text" value="" style="width: 100%;" readonly>
           <h4>Private Key</h4>
           <input id="priv_key" type="text" value="" style="width: 100%;" readonly>
@@ -108,7 +114,7 @@
               </div>
             </div>
           </div>
-          <h3>received key</h3>
+          <h3>Received Key</h3>
           <input id="shared_key" type="text" value="" style="width: 100%;" readonly>
           <h3>Final Key</h3>
           <input id="final_key" type="text" value="" style="width: 100%;" readonly>
@@ -134,7 +140,7 @@
   // Receive new messages from Web Socket
   chatSocket.onmessage = function (e) {
     const message = JSON.parse(e.data);
-    if(message.type == "chatroom_message"){
+    if (message.type == "chatroom_message") {
       document.getElementById("chatBox").innerHTML += `
         <div class="col-4 d-${message.username == user_username ? 'block' : 'none'}"></div>
           <div class="col-8">
@@ -142,10 +148,14 @@
                   <div class="message-content">
                     <small style="font-size: 13px;">${message.username}</small>
                     <p class="mb-1">${message.message}</p>
+                    <p style="font-size: 9px;">
+                    Signature:
+                    <small style="font-size: 9px;">${message.sign}</small>
+                    </p>
                     <small style="font-size: 11px;">${new Date()}</small>                
                     <p></p>
                       <button type="button" class="btn btn-primary"  onclick="decryptDiv(event)">
-                        <i class="fa fa-paper-plane fa-fw"></i>
+                        <i class="fa fa-unlock fa-fw"></i>
                         <span class="d-none d-sm-inline"> Desencriptar</span>
                       </button>
                   </div>
@@ -154,16 +164,17 @@
         <div class="col-4 d-${message.username == user_username ? 'none' : 'block'}"></div>
       `
     }
-    if(message.type == "shared_key" && message.username != user_username){
+    if (message.type == "shared_key" && message.username != user_username) {
       document.getElementById("shared_key").value = message.message
-      
+
       const privKey = document.getElementById("priv_key").value
 
-      if(privKey != ''){
+      if (privKey != '') {
         document.getElementById("final_key").value = gen_shared_key(message.message, privKey)
+        document.getElementById('keyInput').value = gen_shared_key(message.message, privKey)
       }
     }
-    
+
   }
 
   // Send Message to WebSocket
@@ -191,24 +202,26 @@
   const privKeyText = document.getElementById('priv_key');
   const sendKey = document.getElementById('send_key');
 
-  genKeyButton.addEventListener('click', (event) =>{
-      const keys = gen_key()
+  genKeyButton.addEventListener('click', (event) => {
+    const keys = gen_key()
+    if(privKeyText.value == "" && pubKeyText.value == ""){
       pubKeyText.value = keys.pub_key
       privKeyText.value = keys.priv_key
+    }
 
-      if (pubKeyText.value != ''){
+    if (pubKeyText.value != '') {
       chatSocket.send(JSON.stringify({
-        'content': keys.pub_key,
+        'content': pubKeyText.value,
         'is_key': true,
         'is_message': false,
       }));
 
       const sharedKey = document.getElementById("shared_key").value
 
-      if(sharedKey != ''){
-        document.getElementById("final_key").value = gen_shared_key(sharedKey,keys.priv_key)
+      if (sharedKey != '') {
+        document.getElementById("final_key").value = gen_shared_key(sharedKey, privKeyText.value)
+        document.getElementById("keyInput").value = document.getElementById("final_key").value
       }
-
     }
   })
 

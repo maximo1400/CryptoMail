@@ -1,4 +1,4 @@
-cryptography
+# cryptography
 django
 channels
-# daphne
+daphne
