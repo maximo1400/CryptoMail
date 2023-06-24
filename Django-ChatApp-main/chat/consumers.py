@@ -22,7 +22,9 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        message = text_data_json["message"]
+        message = text_data_json["content"]
+        is_msg = text_data_json["is_message"]
+        is_key = text_data_json["is_key"]
         # key = text_data_json["key"].encode()
         # message = str(chat.symetric.encrypt_message(message, key))
         
@@ -33,19 +35,32 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
         # Get the ChatRoom object
         chatroom = await sync_to_async(ChatRoom.objects.get)(name=room_name)
 
-        # Save the message to the database
-        await sync_to_async(Message.objects.create)(
-            message=message, sender=sender, chatroom=chatroom
-        )
+        if is_msg:
+            # Save the message to the database
+  
+            await sync_to_async(Message.objects.create)(
+                message=message, sender=sender, chatroom=chatroom
+            )
 
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                "type": "chatroom_message",
-                "message": message,
-                "username": sender.username,
-            },
-        )
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "chatroom_message",
+                    "message": message,
+                    "username": sender.username,
+                },
+            )
+        if is_key:
+            
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type": "shared_key",
+                    "message": message,
+                    "username": sender.username,
+                },
+            )
+
 
     async def chatroom_message(self, event):
         message = event["message"]
@@ -55,9 +70,23 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
         await self.send(
             text_data=json.dumps(
                 {
+                    "type": "chatroom_message",
                     "message": message,
                     "username": username,
-                    # "key": key,
+                }
+            )
+        )
+    
+    async def shared_key(self, event):
+        message = event["message"]
+        username = event["username"]
+
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "shared_key",
+                    "message": message,
+                    "username": username,
                 }
             )
         )

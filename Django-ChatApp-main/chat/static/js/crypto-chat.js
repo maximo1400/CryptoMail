@@ -37,10 +37,10 @@ function gen_key() {
   var EC = elliptic.ec;
   var ec = new EC('curve25519');
 
-  var priv_key = ec.genKeyPair();
-  var pub_key = priv_key.getPublic();
+  var my_key = ec.genKeyPair();
+  var pub_key = my_key.getPublic('hex');
   return {
-    'priv_key': priv_key,
+    'priv_key': my_key.getPrivate('hex'),
     'pub_key': pub_key,
   }
 }
@@ -49,27 +49,27 @@ function gen_shared_key(pub_key, priv_key) {
   var EC = elliptic.ec;
   var ec = new EC('curve25519');
 
-  var shared_key = priv_key.derive(pub_key);
+  var sk = ec.keyFromPrivate(priv_key, 'hex');
+  var pk = ec.keyFromPublic(pub_key, 'hex').getPublic();
 
-  // var pk = ec.
-
-
-  // console.log(priv_key_class)
-  // var shared = priv_key_class.derive(pub_key);
+  console.log("pase")
+  
+  var shared_key = sk.derive(pk);
   return shared_key.toString(16);
+
 }
 
-function test_ecdh() {
-  console.log("Testing ECDH")
-  key1 = gen_key();
-  key2 = gen_key();
-  console.log("key generated");
-  shared1 = gen_shared_key(key1.pub_key, key2.priv_key);
-  shared2 = gen_shared_key(key2.pub_key, key1.priv_key);
+// function test_ecdh() {
+//   console.log("Testing ECDH")
+//   key1 = gen_key();
+//   key2 = gen_key();
+//   console.log("key generated");
+//   shared1 = gen_shared_key(key1.pub_key, key2.priv_key);
+//   shared2 = gen_shared_key(key2.pub_key, key1.priv_key);
 
-  console.log(key1);
-  console.log(key2);
-  console.log(shared2);
+//   console.log(key1);
+//   console.log(key2);
+//   console.log(shared2);
 
-  return shared1 == shared2;
-}
+//   return shared1 == shared2;
+// }

@@ -98,23 +98,20 @@
       <div class="card mb-3" style="padding: 20px">
         <div>
           <h4 >Public Key</h4>
-          <input id="pub_key" type="text" value="21e0c907c0b37a12a4f8b144ed8839a9025b4f078c139e3995979c9a7b2cec89" style="width: 100%;" readonly>
+          <input id="pub_key" type="text" value="" style="width: 100%;" readonly>
           <h4>Private Key</h4>
-          <input id="priv_key" type="text" value="can't touch this" style="width: 100%;" readonly>
+          <input id="priv_key" type="text" value="" style="width: 100%;" readonly>
           <div class="container" style="padding: 1vh;">
             <div class="row">
               <div class="col">
-                <button type="button" class="btn btn-info" onclick="" id="gen_key">Gen keys</button>
-              </div>
-              <div class="col">
-                <button type="button" class="btn btn-info" onclick="" id="send_key">Share Key</button>
+                <button type="button" class="btn btn-info" onclick="" id="gen_key">Generate keys and send</button>
               </div>
             </div>
           </div>
           <h3>received key</h3>
-          <input id="shared_key" type="text" value="can't touch this" style="width: 100%;" readonly>
+          <input id="shared_key" type="text" value="" style="width: 100%;" readonly>
           <h3>Final Key</h3>
-          <input id="final_key" type="text" value="can't touch this" style="width: 100%;" readonly>
+          <input id="final_key" type="text" value="" style="width: 100%;" readonly>
         </div>
       </div>
 
@@ -137,10 +134,8 @@
   // Receive new messages from Web Socket
   chatSocket.onmessage = function (e) {
     const message = JSON.parse(e.data);
-    console.log(message)
-    // const decryptedMessage = decript(message.message, 'hola')
-    // console.log(decryptedMessage)
-    document.getElementById("chatBox").innerHTML += `
+    if(message.type == "chatroom_message"){
+      document.getElementById("chatBox").innerHTML += `
         <div class="col-4 d-${message.username == user_username ? 'block' : 'none'}"></div>
           <div class="col-8">
               <div class="message mb-3 ${message.username == user_username ? 'self float-end' : ''}">
@@ -158,14 +153,24 @@
           </div>
         <div class="col-4 d-${message.username == user_username ? 'none' : 'block'}"></div>
       `
+    }
+    if(message.type == "shared_key" && message.username != user_username){
+      document.getElementById("shared_key").value = message.message
+      
+      const privKey = document.getElementById("priv_key").value
+
+      if(privKey != ''){
+        document.getElementById("final_key").value = gen_shared_key(message.message, privKey)
+      }
+    }
+    
   }
 
   // Send Message to WebSocket
   const sendButton = document.getElementById('sendButton');
   const messageInput = document.getElementById('messageInput');
   const keyInput = document.getElementById('keyInput');
-  const sendKey = document.getElementById('send_key');
-  
+
   sendButton.addEventListener('click', (event) => {
     const message = messageInput.value.trim();
     const key = keyInput.value.trim();
@@ -181,29 +186,35 @@
     }
   });
 
-
   const genKeyButton = document.getElementById("gen_key");
   const pubKeyText = document.getElementById('pub_key');
   const privKeyText = document.getElementById('priv_key');
+  const sendKey = document.getElementById('send_key');
 
   genKeyButton.addEventListener('click', (event) =>{
       const keys = gen_key()
-      console.log(keys)
-      pubKeyText.value = keys.pub_key.toString()
-      privKeyText.value = keys.priv_key.toString()
+      pubKeyText.value = keys.pub_key
+      privKeyText.value = keys.priv_key
+
+      if (pubKeyText.value != ''){
+      chatSocket.send(JSON.stringify({
+        'content': keys.pub_key,
+        'is_key': true,
+        'is_message': false,
+      }));
+
+      const sharedKey = document.getElementById("shared_key").value
+
+      if(sharedKey != ''){
+        document.getElementById("final_key").value = gen_shared_key(sharedKey,keys.priv_key)
+      }
+
+    }
   })
-  
+
+
 </script>
 
-
-
-<!-- <script type="text/javascript">
-  var encrypted = CryptoJS.AES.encrypt("message", "Secret Passphrase");
-  var decrypted = CryptoJS.AES.decrypt(e, "Q1xniK0P3NaXX5dXLbaRvqAx1h0wDDDPO4gdZwAK3Lk=");
-
-  console.log(decrypted.toString(CryptoJS.enc.Utf8));
-
-</script> 
 
 
 {% endblock %}
