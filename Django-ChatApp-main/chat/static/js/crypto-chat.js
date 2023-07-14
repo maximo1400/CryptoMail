@@ -13,9 +13,9 @@
 
   Retorna como resultado un objeto de js con el cifrado y mac
 */
-function encript(message, key) {
-  var encrypted = CryptoJS.AES.encrypt(message, key).toString();
-  var mac = CryptoJS.HmacSHA256(encrypted, key).toString();
+function encript(message, keyC, keyM) {
+  var encrypted = CryptoJS.AES.encrypt(message, keyC).toString();
+  var mac = CryptoJS.HmacSHA256(encrypted, keyM).toString();
   return {
     'cipher' : encrypted,
     'mac': mac,
