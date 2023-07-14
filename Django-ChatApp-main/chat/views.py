@@ -5,8 +5,6 @@ from .models import ChatRoom, Message
 
 
 def get_chatrooms_with_last_message(user):
-    # chat_rooms = ChatRoom.objects.all()
-    # user = User.objects.get(username = user)
     query = Q(owner=user)
     query.add(Q(guest=user), Q.OR)
     chat_rooms = ChatRoom.objects.all().filter(query)
@@ -52,7 +50,6 @@ def room(request, room_name):
         return redirect("login")
     chatroom, created = ChatRoom.objects.get_or_create(name=room_name)
 
-    # chatroom = ChatRoom.objects.all().filter(name=room_name)
     chat_messages = Message.objects.filter(chatroom=chatroom)
     display_room_name = chatroom.owner.username if chatroom.owner != user else chatroom.guest.username
 
