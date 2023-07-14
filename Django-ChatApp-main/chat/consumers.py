@@ -83,14 +83,16 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
         )
     
     async def shared_key(self, event):
-        message = event["message"]
+        keyC = event["message"]["keyC"]
+        keyM = event["message"]["keyM"]
         username = event["username"]
         #Send the content to client
         await self.send(
             text_data=json.dumps(
                 {
-                    "type": "shared_key",
-                    "message": message,
+                    "type": "shared_keys",
+                    "keyC": keyC,
+                    "keyM": keyM,
                     "username": username,
                 }
             )

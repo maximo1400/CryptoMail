@@ -32,11 +32,11 @@ decript:
 Recibe un objeto de js que contiente un bloque cifrado y un MAC, y lo desencripta dada una key.
 En caso de no ser la key correcta, retorna un mensaje vacio.
 */
-function decript(cipher, key) {
-  var expectedMac = CryptoJS.HmacSHA256(cipher.cipher, key).toString();
+function decript(cipher, keyC, keyM) {
+  var expectedMac = CryptoJS.HmacSHA256(cipher.cipher, keyM).toString();
 
   if (expectedMac == cipher.mac){ //Verifica el mensaje
-    var decrypted = CryptoJS.AES.decrypt(cipher.cipher, key);
+    var decrypted = CryptoJS.AES.decrypt(cipher.cipher, keyC);
     return decrypted.toString(CryptoJS.enc.Utf8);
   }
   return ''
@@ -54,12 +54,14 @@ function decryptDiv(event , boton) {
   var mensajeElement = event.target.parentNode.parentNode.querySelector('.message-content p');
   var signatureElement = event.target.parentNode.parentNode.querySelector('.message-content small[style="font-size: 9px;"]');
 
-  var keyInput = document.getElementById('keyInput');
-  const key = keyInput.value.trim();
+  var keyCInput = document.getElementById('keyCInput');
+  var keyMInput = document.getElementById('keyMInput');
+  const keyC = keyCInput.value.trim();
+  const keyM = keyMInput.value.trim();
   const mensaje = mensajeElement.textContent;
   const mac = signatureElement.textContent;
   
-  if (key == "") {
+  if (keyC == "" || keyM == "") {
     alert("Inserta la key");
     return
   }
@@ -67,7 +69,7 @@ function decryptDiv(event , boton) {
     "cipher": mensaje,
     "mac" : mac,
   }
-  var dMsg = decript(mensajeFirmado, key);
+  var dMsg = decript(mensajeFirmado, keyC, keyM);
 
   if (dMsg == '') {
     alert("key invalida");
@@ -89,11 +91,16 @@ function gen_key() {
   var EC = elliptic.ec;
   var ec = new EC('curve25519');
 
-  var my_key = ec.genKeyPair();
-  var pub_key = my_key.getPublic('hex');
+  var my_keyC = ec.genKeyPair();
+  var pub_keyC = my_keyC.getPublic('hex');
+
+  var my_keyM = ec.genKeyPair();
+  var pub_keyM = my_keyM.getPublic('hex');
   return {
-    'priv_key': my_key.getPrivate('hex'),
-    'pub_key': pub_key,
+    'priv_keyC': my_keyC.getPrivate('hex'),
+    'pub_keyC': pub_keyC,
+    'priv_keyM': my_keyM.getPrivate('hex'),
+    'pub_keyM': pub_keyM,
   }
 }
 
